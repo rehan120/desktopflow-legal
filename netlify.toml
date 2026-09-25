@@ -1,0 +1,25 @@
+[build]
+  publish = "."
+  command = "echo No build step required"
+
+[[redirects]]
+  from = "/privacy-policy"
+  to = "/privacy-policy/"
+  status = 301
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms/"
+  status = 301
+
+[[redirects]]
+  from = "/data-deletion"
+  to = "/data-deletion/"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

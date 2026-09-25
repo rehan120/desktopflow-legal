@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+dist/
+.cache/
+.temp/
+.tmp/
+*.local
+.netlify/
+.vercel/
