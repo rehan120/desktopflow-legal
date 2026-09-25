@@ -2,20 +2,26 @@
   publish = "public"
   command = "echo No build step required"
 
+# Netlify-only: folder indexes live at trailing-slash paths.
+# Do NOT copy these into public/_redirects for Cloudflare Workers —
+# they conflict with Workers html_handling = drop-trailing-slash.
 [[redirects]]
   from = "/privacy-policy"
   to = "/privacy-policy/"
   status = 301
+  force = false
 
 [[redirects]]
   from = "/terms"
   to = "/terms/"
   status = 301
+  force = false
 
 [[redirects]]
   from = "/data-deletion"
   to = "/data-deletion/"
   status = 301
+  force = false
 
 [[headers]]
   for = "/*"

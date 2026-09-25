@@ -19,6 +19,10 @@ const requiredFiles = [
   "package.json",
 ];
 
+const forbiddenFiles = [
+  "public/_redirects",
+];
+
 const requiredMeta = ["<title>", 'meta name="description"', 'name="viewport"'];
 const requiredSections = ['class="site-header"', 'class="site-footer"', 'aria-label="Primary"'];
 
@@ -54,6 +58,14 @@ console.log("Validating desktopflow-legal static site...\n");
 for (const file of requiredFiles) {
   if (await exists(file)) ok(`found ${file}`);
   else fail(`missing ${file}`);
+}
+
+for (const file of forbiddenFiles) {
+  if (await exists(file)) {
+    fail(`${file} must not exist — Cloudflare Workers redirects here loop with html_handling=drop-trailing-slash`);
+  } else {
+    ok(`absent (good): ${file}`);
+  }
 }
 
 const wrangler = await readFile(path.join(root, "wrangler.toml"), "utf8");

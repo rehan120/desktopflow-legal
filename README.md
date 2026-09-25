@@ -104,6 +104,16 @@ npm run deploy
 - `https://<your-domain>/data-deletion`
 - CSS and header/footer navigation on each page
 
+## Routing note (Cloudflare Workers)
+
+Use folder `index.html` files plus:
+
+```toml
+html_handling = "drop-trailing-slash"
+```
+
+Do **not** add `public/_redirects` rules that send `/privacy-policy` → `/privacy-policy/`. Those conflict with `drop-trailing-slash` and create a redirect loop (301 ↔ 307), so the legal URLs never settle on HTTP 200.
+
 ## Git push steps (manual — do not skip review)
 
 ```bash

@@ -1,14 +1,18 @@
-# Cloudflare Workers Static Assets configuration for DesktopFlow ERP legal site.
-# Plain HTML/CSS only — no Worker starter script, no framework build.
+# Cloudflare Workers Static Assets — DesktopFlow ERP legal site
+# Plain HTML/CSS only. No Worker starter script.
 
 name = "desktopflow-legal"
 compatibility_date = "2026-09-25"
 workers_dev = true
 
-# Assets-only Worker: serves files from ./public (replaces Hello World starter).
-# Do NOT set `main` to a Hello World script.
+# Assets-only: serves public/index.html and public/<page>/index.html
+# Do NOT set `main` (avoids Hello World Worker).
+# Do NOT ship a public/_redirects that conflicts with html_handling.
 [assets]
 directory = "./public"
-# Serve folder pages at /privacy-policy, /terms, /data-deletion (no trailing slash required).
+# Extensionless folder routes return 200:
+#   /privacy-policy  -> public/privacy-policy/index.html
+#   /terms           -> public/terms/index.html
+#   /data-deletion   -> public/data-deletion/index.html
 html_handling = "drop-trailing-slash"
 not_found_handling = "404-page"
