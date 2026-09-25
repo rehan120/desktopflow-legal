@@ -82,16 +82,57 @@ npm run validate
 
 ### Option A — Cloudflare Pages (recommended)
 
-1. Ensure this repository is available at [github.com/rehan120/desktopflow-legal](https://github.com/rehan120/desktopflow-legal).
-2. Sign in at [https://dash.cloudflare.com/](https://dash.cloudflare.com/).
-3. Go to **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-4. Select `rehan120/desktopflow-legal`.
-5. Build settings:
-   - Framework preset: **None**
-   - Build command: *(leave empty)*
+This repository is a **static website**. Deploy it with **Cloudflare Pages**.
+
+**Do not use** `npx wrangler deploy`. That command deploys a **Cloudflare Worker**, not a static Pages site. This project has no Worker script and no `wrangler.toml`, so that command fails.
+
+#### Exact Cloudflare Pages settings
+
+| Setting | Value |
+|--------|--------|
+| Product | **Cloudflare Pages** (not Workers) |
+| Production branch | `main` |
+| Framework preset | **None** |
+| Root directory | `/` (repository root) |
+| Build command | *(leave empty)* |
+| Build output directory | `/` |
+| Environment variables | none |
+| Deploy command | **not used** — do not set `npx wrangler deploy` |
+
+If the Cloudflare UI requires a non-empty build command, use:
+
+```bash
+exit 0
+```
+
+and keep **Build output directory** as `/`.
+
+#### Deploy steps (Git integration)
+
+1. Open [https://dash.cloudflare.com/](https://dash.cloudflare.com/).
+2. Go to **Workers & Pages**.
+3. Click **Create** → choose **Pages** → **Connect to Git**  
+   (do **not** create a Worker / do **not** choose a flow that asks for `npx wrangler deploy`).
+4. Select the GitHub repository `rehan120/desktopflow-legal`.
+5. Configure the settings in the table above.
+6. Click **Save and Deploy**.
+7. When finished, open the assigned `*.pages.dev` HTTPS URL and verify:
+   - `/`
+   - `/privacy-policy`
+   - `/terms`
+   - `/data-deletion`
+
+#### If a previous Worker-style deploy already exists
+
+1. Open the failed project in Cloudflare.
+2. Check whether it is a **Worker** project using deploy command `npx wrangler deploy`.
+3. Prefer creating a **new Pages** project with the settings above.
+4. Or, in project **Settings** → **Builds & deployments**, remove any Worker deploy command and switch to Pages build settings:
+   - Build command: empty (or `exit 0`)
    - Build output directory: `/`
-6. Deploy.
-7. Use the free `*.pages.dev` HTTPS URL, or attach a custom domain.
+5. Trigger a new deployment.
+
+No secrets are required for this static site.
 
 ### Option B — Netlify
 
@@ -131,7 +172,14 @@ desktopflow-legal/
 ├── sitemap.xml
 ├── netlify.toml
 ├── _redirects
+├── _headers
 ├── package.json
 ├── scripts/validate.mjs
 └── README.md
 ```
+
+## Cloudflare note
+
+- Use **Pages**, not Workers.
+- Never set deploy command to `npx wrangler deploy` for this repo.
+- No build framework, no Worker entrypoint, no secrets.
