@@ -3,7 +3,9 @@
   "private": true,
   "description": "Public legal website for DesktopFlow ERP by Awan Digital Solutions",
   "scripts": {
-    "start": "npx --yes serve -l 4173",
-    "validate": "node scripts/validate.mjs"
+    "start": "npx --yes serve public -l 4173",
+    "validate": "node scripts/validate.mjs",
+    "dev:cf": "npx --yes wrangler dev",
+    "deploy": "npx --yes wrangler deploy"
   }
 }

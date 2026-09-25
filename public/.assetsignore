@@ -1,0 +1,3 @@
+# Do not upload non-content files from the assets directory.
+_redirects
+_headers

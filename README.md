@@ -8,178 +8,129 @@ This project is **independent** of the DesktopFlow ERP application. It provides 
 
 It contains **no** API keys, Meta App Secrets, WhatsApp access tokens, webhook tokens, passwords, or other secrets.
 
-## What this project is
+## Project type
 
-A lightweight, production-ready static website with:
+**Plain HTML + CSS** (static site).
 
-- Product landing information for DesktopFlow ERP
-- Privacy Policy
-- Terms of Service
-- Data Deletion Instructions
+- Not React
+- Not Vite
+- Not Next.js
+- No application framework build
+
+Site files live in `public/`. Cloudflare Workers serves them via **Static Assets** (`wrangler.toml`).
 
 ## Public pages
 
 | Path | Purpose |
 |------|---------|
 | `/` | Product landing page |
-| `/privacy-policy/` | Privacy Policy |
-| `/terms/` | Terms of Service |
-| `/data-deletion/` | Data Deletion Instructions |
-
-Canonical Meta-style URLs (with or without trailing slash after deploy redirects):
-
-- `https://<public-domain>/privacy-policy`
-- `https://<public-domain>/terms`
-- `https://<public-domain>/data-deletion`
-
-## Tech stack
-
-- Plain HTML + CSS
-- No React, Vite, Electron, or backend
-- No build step required
-- Deployable as a static site on Cloudflare Pages, Netlify, GitHub Pages, or similar
+| `/privacy-policy` | Privacy Policy |
+| `/terms` | Terms of Service |
+| `/data-deletion` | Data Deletion Instructions |
 
 ## Run locally
-
-From the project root:
 
 ```bash
 npm start
 ```
 
-Or:
+This serves the `public/` folder at http://localhost:4173/
 
-```bash
-npx --yes serve -l 4173
-```
-
-Then open:
+Verify:
 
 - http://localhost:4173/
 - http://localhost:4173/privacy-policy/
 - http://localhost:4173/terms/
 - http://localhost:4173/data-deletion/
+- http://localhost:4173/css/styles.css
 
-Python alternative:
+Optional validation:
 
 ```bash
-python -m http.server 4173
+npm run validate
+```
+
+Optional Cloudflare local preview (Workers static assets):
+
+```bash
+npm run dev:cf
 ```
 
 ## Build
 
 **No build step is required.**
 
-This is a static site. Hosts should publish the repository root as-is.
+Build command for Cloudflare: leave empty (or `exit 0` if the UI requires a value).
 
-Optional local validation:
+## Deploy with Cloudflare Workers Static Assets
 
-```bash
-npm run validate
-```
+Production previously showed **Hello world** because a default Worker starter was deployed instead of these static files. This repo is configured as an **assets-only** Worker that serves `./public`.
 
-## Deploy (free HTTPS)
-
-### Option A — Cloudflare Pages (recommended)
-
-This repository is a **static website**. Deploy it with **Cloudflare Pages**.
-
-**Do not use** `npx wrangler deploy`. That command deploys a **Cloudflare Worker**, not a static Pages site. This project has no Worker script and no `wrangler.toml`, so that command fails.
-
-#### Exact Cloudflare Pages settings
+### Exact Cloudflare settings
 
 | Setting | Value |
 |--------|--------|
-| Product | **Cloudflare Pages** (not Workers) |
-| Production branch | `main` |
-| Framework preset | **None** |
-| Root directory | `/` (repository root) |
-| Build command | *(leave empty)* |
-| Build output directory | `/` |
-| Environment variables | none |
-| Deploy command | **not used** — do not set `npx wrangler deploy` |
+| Config file | `wrangler.toml` |
+| Worker name | `desktopflow-legal` |
+| Asset directory | `./public` |
+| Worker `main` script | **none** (assets-only; do not keep Hello World) |
+| HTML handling | `drop-trailing-slash` |
+| Build command | *(empty)* / none |
+| Deploy command | `npx wrangler deploy` |
+| Environment variables / secrets | none |
 
-If the Cloudflare UI requires a non-empty build command, use:
+### Deploy from your machine (after login)
 
 ```bash
-exit 0
+npx wrangler login
+npm run deploy
 ```
 
-and keep **Build output directory** as `/`.
+### Deploy from Cloudflare Git integration
 
-#### Deploy steps (Git integration)
+1. Open the existing Worker project in Cloudflare (the one showing Hello world).
+2. Connect it to `rehan120/desktopflow-legal` **or** redeploy from a machine with Wrangler after pushing this config.
+3. Ensure deploy uses **`npx wrangler deploy`** with this repository’s `wrangler.toml`.
+4. Do **not** keep a Hello World `src/index.js` / `main` Worker entrypoint in the project.
+5. Build command: empty.
+6. No secrets required.
+7. Redeploy, then verify the four routes on the `*.workers.dev` / custom domain URL.
 
-1. Open [https://dash.cloudflare.com/](https://dash.cloudflare.com/).
-2. Go to **Workers & Pages**.
-3. Click **Create** → choose **Pages** → **Connect to Git**  
-   (do **not** create a Worker / do **not** choose a flow that asks for `npx wrangler deploy`).
-4. Select the GitHub repository `rehan120/desktopflow-legal`.
-5. Configure the settings in the table above.
-6. Click **Save and Deploy**.
-7. When finished, open the assigned `*.pages.dev` HTTPS URL and verify:
-   - `/`
-   - `/privacy-policy`
-   - `/terms`
-   - `/data-deletion`
+### After deploy, verify
 
-#### If a previous Worker-style deploy already exists
+- `https://<your-domain>/`
+- `https://<your-domain>/privacy-policy`
+- `https://<your-domain>/terms`
+- `https://<your-domain>/data-deletion`
+- CSS and header/footer navigation on each page
 
-1. Open the failed project in Cloudflare.
-2. Check whether it is a **Worker** project using deploy command `npx wrangler deploy`.
-3. Prefer creating a **new Pages** project with the settings above.
-4. Or, in project **Settings** → **Builds & deployments**, remove any Worker deploy command and switch to Pages build settings:
-   - Build command: empty (or `exit 0`)
-   - Build output directory: `/`
-5. Trigger a new deployment.
+## Git push steps (manual — do not skip review)
 
-No secrets are required for this static site.
+```bash
+cd desktopflow-legal
+git status
+git add .
+git commit -m "Configure Cloudflare Workers static assets for legal site"
+git push origin main
+```
 
-### Option B — Netlify
-
-1. Sign in at [https://app.netlify.com/](https://app.netlify.com/).
-2. **Add new site** → import `rehan120/desktopflow-legal` (or drag-and-drop deploy).
-3. Publish directory: site root (`.` / `/`).
-4. Build command: none required (`netlify.toml` is included).
-5. Use the free `*.netlify.app` HTTPS URL, or add a custom domain.
-
-### Option C — GitHub Pages
-
-1. Repository **Settings** → **Pages**.
-2. Source: **Deploy from a branch**.
-3. Branch: `main` (or `master`), folder: `/ (root)`.
-4. Save and wait for the HTTPS Pages URL.
-
-## Meta Developer Console URLs
-
-After deployment, replace `<public-domain>` with your live host:
-
-- Privacy Policy: `https://<public-domain>/privacy-policy/`
-- Terms of Service: `https://<public-domain>/terms/`
-- Data Deletion: `https://<public-domain>/data-deletion/`
-- Home (optional): `https://<public-domain>/`
+Then run `npm run deploy` (or trigger the linked Cloudflare Git deploy).
 
 ## Project structure
 
 ```text
 desktopflow-legal/
-├── index.html
-├── privacy-policy/index.html
-├── terms/index.html
-├── data-deletion/index.html
-├── css/styles.css
-├── favicon.svg
-├── robots.txt
-├── sitemap.xml
-├── netlify.toml
-├── _redirects
-├── _headers
+├── public/
+│   ├── index.html
+│   ├── privacy-policy/index.html
+│   ├── terms/index.html
+│   ├── data-deletion/index.html
+│   ├── css/styles.css
+│   ├── favicon.svg
+│   ├── robots.txt
+│   └── sitemap.xml
+├── wrangler.toml
 ├── package.json
 ├── scripts/validate.mjs
 └── README.md
 ```
-
-## Cloudflare note
-
-- Use **Pages**, not Workers.
-- Never set deploy command to `npx wrangler deploy` for this repo.
-- No build framework, no Worker entrypoint, no secrets.
